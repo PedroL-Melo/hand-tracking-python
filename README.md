@@ -5,7 +5,7 @@ Um script em Python que utiliza visão computacional para rastrear as 21 juntas 
 ## 🛠️ Tecnologias Utilizadas
 * Python
 * MediaPipe
-* OpenCv
+* OpenCV
 
 ## 🚀 Como Executar
 1. Clone este repositório.
