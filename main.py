@@ -9,6 +9,7 @@ GestureRecognizer = mp.tasks.vision.GestureRecognizer
 GestureRecognizerOptions = mp.tasks.vision.GestureRecognizerOptions
 GestureRecognizerResult = mp.tasks.vision.GestureRecognizerResult
 VisionRunningMode = mp.tasks.vision.RunningMode
+HandLandmarker = mp.tasks.vision.HandLandmarker
 resultados_ia = None
 
 model_path = r'C:\Users\pedro\OneDrive\Documentos\handtracking\gesture_recognizer.task'
@@ -25,6 +26,14 @@ options = GestureRecognizerOptions(
     num_hands=2)
 with GestureRecognizer.create_from_options(options) as recognizer:
     camera = cv2.VideoCapture(0)
+    MAPA_DOS_OSSOS = [
+        (0, 1), (1, 2), (2, 3), (3, 4),       # Dedão
+        (0, 5), (5, 6), (6, 7), (7, 8),       # Indicador
+        (5, 9), (9, 10), (10, 11), (11, 12),  # Dedo Médio
+        (9, 13), (13, 14), (14, 15), (15, 16),# Anelar
+        (13, 17), (17, 18), (18, 19), (19, 20),# Minguinho
+        (0, 17)                               # Fechando a palma da mão
+    ]
     while True:
         sucesso, frame = camera.read()
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -32,10 +41,16 @@ with GestureRecognizer.create_from_options(options) as recognizer:
         altura, largura, _ = frame.shape
         if resultados_ia != None:
             for mao in resultados_ia.hand_landmarks:
+                pontos_maos = []
                 for ponto in mao:
                     pixel_x = int(ponto.x * largura)
                     pixel_y = int(ponto.y * altura)
+                    pontos_maos.append((pixel_x, pixel_y))
                     cv2.circle(frame, (pixel_x, pixel_y), 5, (0, 255, 0), -1)
+                for conexao in MAPA_DOS_OSSOS:
+                    ponto_a = pontos_maos[conexao[0]]
+                    ponto_b = pontos_maos[conexao[1]]
+                    cv2.line(frame, ponto_a, ponto_b, (255, 0, 0), 2)
         cv2.imshow('Rastreador', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'): break
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)
