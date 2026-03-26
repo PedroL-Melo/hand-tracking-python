@@ -9,8 +9,6 @@ GestureRecognizer = mp.tasks.vision.GestureRecognizer
 GestureRecognizerOptions = mp.tasks.vision.GestureRecognizerOptions
 GestureRecognizerResult = mp.tasks.vision.GestureRecognizerResult
 VisionRunningMode = mp.tasks.vision.RunningMode
-mp_drawing = mp.solutions.drawing_utils
-mp_hands = mp.solutions.hands
 resultados_ia = None
 
 model_path = r'C:\Users\pedro\OneDrive\Documentos\handtracking\gesture_recognizer.task'
@@ -31,13 +29,14 @@ with GestureRecognizer.create_from_options(options) as recognizer:
         sucesso, frame = camera.read()
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         timestamp = int(time.time() * 1000)
+        altura, largura, _ = frame.shape
         if resultados_ia != None:
             for mao in resultados_ia.hand_landmarks:
-                mao_traduzida = landmark_pb2.NormalizedLandmarkList()
-                mao_traduzida.landmark.extend([
-                    landmark_pb2.NormalizedLandmark(x=ponto.x, y=ponto.y, z=ponto.z) for ponto in mao
-                ])
-                mp_drawing.draw_landmarks(frame, mao_traduzida, mp_hands.HAND_CONNECTIONS)
+                for ponto in mao:
+                    pixel_x = int(ponto.x * largura)
+                    pixel_y = int(ponto.y * altura)
+                    cv2.circle(frame, (pixel_x, pixel_y), 5, (0, 255, 0), -1)
+                
         cv2.imshow('Rastreador', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'): break
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)
