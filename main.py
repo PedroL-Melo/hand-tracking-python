@@ -34,12 +34,18 @@ with GestureRecognizer.create_from_options(options) as recognizer:
         (13, 17), (17, 18), (18, 19), (19, 20),# Minguinho
         (0, 17)                               # Fechando a palma da mão
     ]
+    foto = cv2.imread(r'C:\Users\pedro\OneDrive\Documentos\handtracking\foto\images.jpeg')
     while True:
         sucesso, frame = camera.read()
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         timestamp = int(time.time() * 1000)
         altura, largura, _ = frame.shape
+        foto_tela_cheia = cv2.resize(foto, (largura, altura))
         if resultados_ia != None:
+            if resultados_ia.gestures:
+                gesto = resultados_ia.gestures[0][0].category_name
+                if gesto == 'Open_Palm':
+                    frame[0:altura, 0:largura] = foto_tela_cheia
             for mao in resultados_ia.hand_landmarks:
                 pontos_maos = []
                 for ponto in mao:
