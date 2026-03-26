@@ -21,7 +21,8 @@ def print_result(result: GestureRecognizerResult, output_image: mp.Image, timest
 options = GestureRecognizerOptions(
     base_options=BaseOptions(model_asset_path=r'C:\Users\pedro\OneDrive\Documentos\handtracking\gesture_recognizer.task'),
     running_mode=VisionRunningMode.LIVE_STREAM,
-    result_callback=print_result)
+    result_callback=print_result,
+    num_hands=2)
 with GestureRecognizer.create_from_options(options) as recognizer:
     camera = cv2.VideoCapture(0)
     while True:
