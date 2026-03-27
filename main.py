@@ -37,15 +37,19 @@ with GestureRecognizer.create_from_options(options) as recognizer:
     foto = cv2.imread(r'C:\Users\pedro\OneDrive\Documentos\handtracking\foto\images.jpeg')
     while True:
         sucesso, frame = camera.read()
+        frame =  cv2.flip(frame, 1)
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         timestamp = int(time.time() * 1000)
         altura, largura, _ = frame.shape
         foto_tela_cheia = cv2.resize(foto, (largura, altura))
         if resultados_ia != None:
             if resultados_ia.gestures:
-                gesto = resultados_ia.gestures[0][0].category_name
-                if gesto == 'Open_Palm':
-                    frame[0:altura, 0:largura] = foto_tela_cheia
+                quant_maos = len(resultados_ia.gestures)
+                if quant_maos == 2:
+                    gesto_1 = resultados_ia.gestures[0][0].category_name
+                    gesto_2 = resultados_ia.gestures[1][0].category_name
+                    if gesto_1 == 'Open_Palm' and gesto_1 == gesto_2:
+                        frame[0:altura, 0:largura] = foto_tela_cheia
             for mao in resultados_ia.hand_landmarks:
                 pontos_maos = []
                 for ponto in mao:
